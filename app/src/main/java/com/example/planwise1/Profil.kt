@@ -265,7 +265,7 @@ fun Profile(){
         item {
             Column(modifier = Modifier
                 .background(color = Color.White)
-                .padding(start = 30.dp, top = 70.dp, bottom = 20.dp),
+                .padding(start = 45.dp, top = 70.dp, bottom = 20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally)
             {
                 IconButton(
