@@ -1,6 +1,5 @@
 package com.example.planwise1
 
-import RegistrationScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,6 +35,7 @@ class MainActivity : ComponentActivity() {
                     {
                         composable("onboarding_screen") { OnboardSreen(navController) }
                         composable("logins_screen") { LoginScreen(navController) }
+                        composable("register_screen") { RegistrationScreen(navController) }
                     }
                 }
             }

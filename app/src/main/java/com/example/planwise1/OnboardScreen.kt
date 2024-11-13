@@ -160,7 +160,7 @@ fun OnboardSreen(navHostController: NavHostController){
                     )
                 }
                 Spacer(modifier = Modifier.height(9.dp))
-                IconButton(onClick = { /*TODO()*/},
+                IconButton(onClick = { navHostController.navigate("register_screen")},
                     modifier = Modifier.width(370.dp) .height(39.dp)) {
                     Image(
                         modifier = Modifier

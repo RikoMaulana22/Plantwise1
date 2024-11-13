@@ -54,7 +54,7 @@ fun LoginScreen(navHostController: NavHostController) {
             .background(color = Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Back button
+
         IconButton(onClick = { navHostController.navigate("onboarding_screen") },
             modifier = Modifier
                 .align(Alignment.Start)
@@ -70,7 +70,6 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Welcome message
         Text(
             modifier = Modifier
                 .align(Alignment.Start)
@@ -167,7 +166,6 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Remember me switch
         Row(verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.Start)
@@ -255,7 +253,7 @@ fun LoginScreen(navHostController: NavHostController) {
         Spacer(modifier = Modifier.height(24.dp))
 
 
-        TextButton(onClick = { /* handle register */ }) {
+        TextButton(onClick = { navHostController.navigate("register_screen") }) {
             Text("Belum Punya Akun? Daftarkan", color = Color.Gray)
         }
     }
