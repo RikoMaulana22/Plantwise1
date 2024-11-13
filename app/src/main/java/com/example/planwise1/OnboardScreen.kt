@@ -16,16 +16,50 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.rememberPagerState
 
+@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun OnboardSreen(){
+fun OnboardSreen(navHostController: NavHostController){
+
+    val imageList = listOf(
+        R.drawable.onboardsatuuu,
+        R.drawable.onboarddua,
+        R.drawable.onboardtiga,
+    )
+    val sliderimage = listOf(
+        R.drawable.slidersatu,
+        R.drawable.sliderdua,
+        R.drawable.slidertiga,
+    )
+    val copywriter = listOf(
+        "Selamat Datang di PlantWise!",
+        "Bergabung dengan Komunitas Pecinta Tanaman",
+        "Fitur Canggih untuk Deteksi Penyakit Tanaman-Mu",
+    )
+    val copywriter2 = listOf(
+        "Mari bersama-sama merawat keindahan alam." +
+                " Temukan ribuan tanaman hijau yang siap mempercantik rumahmu. " +
+                "Mulai petualangan berkebunmu sekarang!",
+        "Temukan tips, inspirasi, dan teman baru sesama pecinta tanaman! Yuk, " +
+                "gabung sekarang dan tumbuhkan kebun impian bersama!",
+        "Scan tanamanmu untuk mendeteksi penyakit dengan cepat dan akurat"
+    )
+
+    val pagerState = rememberPagerState()
+
     Column(modifier = Modifier
         .background(color = Color.Yellow)
         .fillMaxSize(),
@@ -37,69 +71,85 @@ fun OnboardSreen(){
             .background(color = Color.White))
         {
 
-            Image(
+            HorizontalPager(
+                count = imageList.size,
+                state = pagerState,
                 modifier = Modifier
                     .width(412.dp)
-                    .height(917.dp),
-                painter = painterResource(
-                    id = R.drawable.onboardsatuuu),
-                contentDescription = null)
+                    .height(917.dp)
+            ) { page ->
+                Image(
+                    painter = painterResource(id = imageList[page]),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
 
             Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 167.dp,top = 475.dp))
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .align(Alignment.Center))
             {
 
                 Image(
                     modifier = Modifier
                         .width(79.dp)
-                        .height(16.dp),
+                        .height(16.dp)
+                        .align(Alignment.Center),
                     painter = painterResource(
-                        id = R.drawable.slidersatu),
-                    contentDescription = null)
-
-            }
-
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 55.dp, top = 518.dp))
-            {
-
-                Text(
-                    text = "Selamat Datang di PlantWise!",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 20.dp)
+                        id = sliderimage[pagerState.currentPage]
+                    ),
+                    contentDescription = null
                 )
 
             }
 
             Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 10.dp, top = 551.dp))
+                .fillMaxWidth()
+                .align(Alignment.Center))
             {
 
                 Text(
-                    text = "Mari bersama-sama merawat keindahan alam. " +
-                            "Temukan ribuan tanaman hijau yang siap mempercantik rumahmu. " +
-                            "Mulai petualangan berkebunmu sekarang!",
+                    text = copywriter[pagerState.currentPage],
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 100.dp)
+                )
+
+            }
+
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, end = 10.dp)
+                .align(Alignment.Center))
+            {
+
+                Text(
+                    text = copywriter2[pagerState.currentPage],
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .padding(top = 250.dp)
+                        .align(Alignment.Center)
                 )
 
             }
             Column(modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 10.dp, top = 742.dp),
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 50.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center)
             {
 
-                IconButton(onClick = { /*TODO()*/},
+                IconButton(onClick = { navHostController.navigate("logins_screen")},
                     modifier = Modifier.width(370.dp) .height(39.dp)) {
                     Image(
                         modifier = Modifier
@@ -124,6 +174,5 @@ fun OnboardSreen(){
             }
 
         }
-
     }
 }

@@ -1,6 +1,7 @@
 package com.example.planwise1
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -15,101 +17,174 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navHostController: NavHostController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
+    var passwordVisibility by remember { mutableStateOf(false) }
+
+    val btnmasuk = listOf(
+        R.drawable.btnmasuk,
+        R.drawable.btnmasuk2
+    )
+    var isClicked by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(color = Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Back button
-        IconButton(onClick = { /* handle back action */ }) {
-            Icon(Icons.Default.Close, contentDescription = "Back")
+        IconButton(onClick = { navHostController.navigate("onboarding_screen") },
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 30.dp, top = 50.dp)
+                .width(50.dp)
+                .height(50.dp)) {
+            Image(
+                painter = painterResource(id = R.drawable.btnback),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Welcome message
         Text(
-            text = "Selamat Datang!\nMari Merawat Bersama",
-            fontSize = 24.sp,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 30.dp),
+            text = "Selamat Datang!\n \nMari Merawat Bersama",
+            fontSize = 35.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF0D253C),
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            textAlign = TextAlign.Left
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Username TextField
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text("Masukkan Username") },
-            modifier = Modifier.fillMaxWidth()
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Gray
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 30.dp, end = 30.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password TextField
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
             label = { Text("Masukkan Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Gray
+            ),
+            trailingIcon = {
+
+                IconButton(
+                    onClick = { passwordVisibility = !passwordVisibility }
+                ) {
+                    val icon = if (passwordVisibility) {
+                        painterResource(id = R.drawable.notshowpw)
+                    } else {
+                        painterResource(id = R.drawable.showpw)
+                    }
+                    Icon(painter = icon, contentDescription = "Toggle password visibility",
+                        tint = Color.Black
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 30.dp, end = 30.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Forgot Password
-        TextButton(onClick = { /* handle forgot password */ }) {
-            Text("Lupa Password?")
+        TextButton(onClick = { /* handle forgot password */ },
+            modifier = Modifier
+                .align(Alignment.End)
+                .padding(end = 20.dp))
+        {
+            Text("Lupa Password?",
+                color = Color(0xFF6A707C)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Login button
-        Button(
-            onClick = { /* handle login */ },
+
+        IconButton(
+            onClick = { isClicked = !isClicked },
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                .width(370.dp)
+                .height(70.dp)
         ) {
-            Text("Masuk", color = Color(0xFF0D253C))
+
+            Image(
+                painter = painterResource(id = if (isClicked) btnmasuk[1] else btnmasuk[0]),
+                contentDescription = "cari btn",
+                modifier = Modifier
+                    .width(344.dp)
+                    .height(56.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Remember me switch
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Switch(
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 30.dp)) {
+            Switch(modifier = Modifier
+                .padding(end = 5.dp),
                 checked = rememberMe,
                 onCheckedChange = { rememberMe = it },
-                colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF0D253C))
+                colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF16423C))
             )
-            Text("Tetap Login")
+            Text("Tetap Login",
+                color = Color(0xFF6A707C)
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Login with divider
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -120,7 +195,9 @@ fun LoginScreen() {
                     .weight(1f)
                     .padding(horizontal = 16.dp)
             )
-            Text("Masuk dengan")
+            Text("Masuk dengan",
+                color = Color(0xFF6A707C)
+            )
             Divider(
                 modifier = Modifier
                     .weight(1f)
@@ -130,37 +207,59 @@ fun LoginScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Social media login icons
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* handle Facebook login */ }) {
+            IconButton(onClick = { /* handle Facebook login */ },
+                modifier = Modifier
+                    .width(130.dp)
+                    .height(70.dp)) {
                 Image(
-                    painter = painterResource(id = R.drawable.fb_icon), // Replace with actual icon resource
-                    contentDescription = "Facebook"
+                    modifier = Modifier
+                        .width(105.dp)
+                        .height(56.dp),
+                    painter = painterResource(id = R.drawable.facebook),
+                    contentDescription = "Facebook",
+                    contentScale = ContentScale.Crop
                 )
             }
-            IconButton(onClick = { /* handle Google login */ }) {
-                Image(
-                    painter = painterResource(id = R.drawable.google_icon), // Replace with actual icon resource
-                    contentDescription = "Google"
+            IconButton(onClick = { /* handle Google login */ },
+                modifier = Modifier
+                    .width(130.dp)
+                    .height(70.dp)) {
+                Image(modifier = Modifier
+                    .width(105.dp)
+                    .height(56.dp),
+                    painter = painterResource(id = R.drawable.google),
+                    contentDescription = "Google",
+                    contentScale = ContentScale.Crop
                 )
             }
-            IconButton(onClick = { /* handle GitHub login */ }) {
-                Image(
-                    painter = painterResource(id = R.drawable.github_icon), // Replace with actual icon resource
-                    contentDescription = "GitHub"
+            IconButton(onClick = { /* handle GitHub login */ },
+                modifier = Modifier
+                    .width(130.dp)
+                    .height(70.dp)) {
+                Image(modifier = Modifier
+                    .width(105.dp)
+                    .height(56.dp),
+                    painter = painterResource(id = R.drawable.github),
+                    contentDescription = "GitHub",
+                    contentScale = ContentScale.Crop
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Register prompt
+
         TextButton(onClick = { /* handle register */ }) {
             Text("Belum Punya Akun? Daftarkan", color = Color.Gray)
         }
     }
 }
+
+
 

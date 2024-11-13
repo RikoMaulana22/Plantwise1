@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun HomeScreen() {
+fun BerandaScreen() {
 
 
     Column(
@@ -268,6 +268,9 @@ fun PlantListItem(name: String, imageResId: Int) {
     }
 }
 
-
-
+@Preview
+@Composable
+fun BerandaScreenPreview(){
+    BerandaScreen()
+}
 
