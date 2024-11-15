@@ -30,12 +30,14 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "onboarding_screen"
+                        startDestination = "kamus_screen"
                     )
                     {
                         composable("onboarding_screen") { OnboardSreen(navController) }
                         composable("logins_screen") { LoginScreen(navController) }
                         composable("register_screen") { RegistrationScreen(navController) }
+                        composable("komunitas_screen") { KomunitasScreen(navController) }
+                        composable("kamus_screen") { KamusTanamanScreen(navController) }
                     }
                 }
             }

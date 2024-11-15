@@ -41,12 +41,12 @@ fun LoginScreen(navHostController: NavHostController) {
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     var passwordVisibility by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(false) }
 
     val btnmasuk = listOf(
         R.drawable.btnmasuk,
         R.drawable.btnmasuk2
     )
-    var isClicked by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -211,7 +211,7 @@ fun LoginScreen(navHostController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* handle Facebook login */ },
+            IconButton(onClick = { navHostController.navigate("komunitas_screen") },
                 modifier = Modifier
                     .width(130.dp)
                     .height(70.dp)) {
