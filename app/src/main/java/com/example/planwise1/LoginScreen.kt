@@ -4,20 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,20 +16,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navHostController: NavHostController) {
+fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHelper) {
+    // State variables for username, password, and error handling
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var rememberMe by remember { mutableStateOf(false) }
     var passwordVisibility by remember { mutableStateOf(false) }
-    var isClicked by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
+    // Button states
     val btnmasuk = listOf(
         R.drawable.btnmasuk,
         R.drawable.btnmasuk2
@@ -54,22 +43,23 @@ fun LoginScreen(navHostController: NavHostController) {
             .background(color = Color.White),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        IconButton(onClick = { navHostController.navigate("onboarding_screen") },
+        // Back button to navigate to onboarding
+        IconButton(
+            onClick = { navHostController.popBackStack() },
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = 30.dp, top = 50.dp)
-                .width(50.dp)
-                .height(50.dp)) {
+        ) {
             Image(
                 painter = painterResource(id = R.drawable.btnback),
-                contentDescription = null,
+                contentDescription = "Back Button",
                 contentScale = ContentScale.Crop
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Welcome text
         Text(
             modifier = Modifier
                 .align(Alignment.Start)
@@ -83,6 +73,7 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
+        // Username input field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -101,6 +92,7 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Password input field
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -114,16 +106,13 @@ fun LoginScreen(navHostController: NavHostController) {
                 unfocusedBorderColor = Color.Gray
             ),
             trailingIcon = {
-
                 IconButton(
                     onClick = { passwordVisibility = !passwordVisibility }
                 ) {
-                    val icon = if (passwordVisibility) {
-                        painterResource(id = R.drawable.notshowpw)
-                    } else {
-                        painterResource(id = R.drawable.showpw)
-                    }
-                    Icon(painter = icon, contentDescription = "Toggle password visibility",
+                    val icon = if (passwordVisibility) R.drawable.notshowpw else R.drawable.showpw
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = "Toggle password visibility",
                         tint = Color.Black
                     )
                 }
@@ -135,29 +124,53 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(onClick = { /* handle forgot password */ },
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(end = 20.dp))
-        {
-            Text("Lupa Password?",
-                color = Color(0xFF6A707C)
+        // Error message
+        if (loginError.isNotEmpty()) {
+            Text(
+                text = loginError,
+                color = Color.Red,
+                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Show loading indicator if logging in
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(50.dp)
+                    .align(Alignment.CenterHorizontally),
+                color = Color(0xFF16423C)
+            )
+        }
 
+        // Login button
         IconButton(
-            onClick = { isClicked = !isClicked },
+            onClick = {
+                if (username.isEmpty() || password.isEmpty()) {
+                    loginError = "Username dan Password tidak boleh kosong"
+                } else {
+                    isLoading = true
+                    loginError = ""
+                    // Simulating login process
+                    val isLoginSuccessful = databaseHelper.checkUser(username, password)
+                    isLoading = false
+                    if (isLoginSuccessful) {
+                        // Arahkan ke halaman Komunitas setelah login berhasil
+                        navHostController.navigate("komunitas_screen")
+                    } else {
+                        loginError = "Username atau Password salah"
+                    }
+                }
+            },
             modifier = Modifier
                 .width(370.dp)
                 .height(70.dp)
         ) {
-
             Image(
-                painter = painterResource(id = if (isClicked) btnmasuk[1] else btnmasuk[0]),
-                contentDescription = "cari btn",
+                painter = painterResource(id = btnmasuk[0]),
+                contentDescription = "Login Button",
                 modifier = Modifier
                     .width(344.dp)
                     .height(56.dp)
@@ -166,98 +179,27 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(verticalAlignment = Alignment.CenterVertically,
+        // Remember me switch
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 30.dp)) {
-            Switch(modifier = Modifier
-                .padding(end = 5.dp),
+                .padding(start = 30.dp)
+        ) {
+            Switch(
+                modifier = Modifier.padding(end = 5.dp),
                 checked = rememberMe,
                 onCheckedChange = { rememberMe = it },
                 colors = SwitchDefaults.colors(checkedThumbColor = Color(0xFF16423C))
             )
-            Text("Tetap Login",
-                color = Color(0xFF6A707C)
-            )
+            Text("Tetap Login", color = Color(0xFF6A707C))
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Divider(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            )
-            Text("Masuk dengan",
-                color = Color(0xFF6A707C)
-            )
-            Divider(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = { navHostController.navigate("komunitas_screen") },
-                modifier = Modifier
-                    .width(130.dp)
-                    .height(70.dp)) {
-                Image(
-                    modifier = Modifier
-                        .width(105.dp)
-                        .height(56.dp),
-                    painter = painterResource(id = R.drawable.facebook),
-                    contentDescription = "Facebook",
-                    contentScale = ContentScale.Crop
-                )
-            }
-            IconButton(onClick = { /* handle Google login */ },
-                modifier = Modifier
-                    .width(130.dp)
-                    .height(70.dp)) {
-                Image(modifier = Modifier
-                    .width(105.dp)
-                    .height(56.dp),
-                    painter = painterResource(id = R.drawable.google),
-                    contentDescription = "Google",
-                    contentScale = ContentScale.Crop
-                )
-            }
-            IconButton(onClick = { /* handle GitHub login */ },
-                modifier = Modifier
-                    .width(130.dp)
-                    .height(70.dp)) {
-                Image(modifier = Modifier
-                    .width(105.dp)
-                    .height(56.dp),
-                    painter = painterResource(id = R.drawable.github),
-                    contentDescription = "GitHub",
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-
+        // Register navigation
         TextButton(onClick = { navHostController.navigate("register_screen") }) {
             Text("Belum Punya Akun? Daftarkan", color = Color.Gray)
         }
     }
 }
-
-
-
