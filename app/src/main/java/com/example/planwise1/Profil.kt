@@ -27,9 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 @Composable
-fun Profile(){
+fun Profile(navHostController: NavHostController){
     LazyColumn(modifier = Modifier
         .background(color = Color.White)
         .fillMaxSize(),
@@ -73,7 +74,7 @@ fun Profile(){
                             .align(Alignment.TopStart)
                             .padding(top = 75.dp, start = 45.dp)
                     ) {
-                        IconButton(onClick = { /*TODO()*/},
+                        IconButton(onClick = { navHostController.navigate("beranda_screen")},
                             modifier = Modifier.width(50.dp) .height(50.dp)) {
                             Image(
                                 modifier = Modifier
@@ -286,9 +287,4 @@ fun Profile(){
             }
         }
     }
-}
-@Preview
-@Composable
-fun ProfilePreview(){
-    Profile()
 }

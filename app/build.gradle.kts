@@ -68,8 +68,12 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation ("com.google.accompanist:accompanist-pager:0.28.0")
-    implementation ( "com.google.accompanist:accompanist-pager-indicators:0.28.0")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
     implementation ("androidx.compose.runtime:runtime:1.4.0")
+    implementation("androidx.compose.foundation:foundation:1.3.1")
+    implementation ("androidx.compose.ui:ui:1.5.1")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.0")
 
     //retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")

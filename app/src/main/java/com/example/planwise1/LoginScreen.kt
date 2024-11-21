@@ -158,7 +158,7 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
                     isLoading = false
                     if (isLoginSuccessful) {
                         // Arahkan ke halaman Komunitas setelah login berhasil
-                        navHostController.navigate("komunitas_screen")
+                        navHostController.navigate("beranda_screen")
                     } else {
                         loginError = "Username atau Password salah"
                     }

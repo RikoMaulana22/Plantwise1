@@ -20,8 +20,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Inisialisasi DatabaseHelper dengan Context
-        databaseHelper = DatabaseHelper(this) // Gunakan `this` untuk mengakses context dari aktivitas
+        databaseHelper = DatabaseHelper(this)
 
         setContent {
             Planwise1Theme {
@@ -35,9 +34,12 @@ class MainActivity : ComponentActivity() {
                         composable("onboarding_screen") { OnboardSreen(navController) }
                         composable("logins_screen") { LoginScreen(navController, databaseHelper) }
                         composable("register_screen") { RegistrationScreen(navController) }
+                        composable("beranda_screen") { Beranda(navController) }
                         composable("komunitas_screen") { KomunitasScreen(navController) }
                         composable("kamus_screen") { KamusTanamanScreen(navController) }
                         composable("list_screen") { ListKamusScreen(navController) }
+                        composable("profil_screen") { Profile(navController) }
+                        composable("myplant_screen") { MyPlantScreen(navController) }
                     }
                 }
             }

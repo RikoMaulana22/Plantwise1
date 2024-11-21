@@ -214,7 +214,7 @@ fun KomunitasScreen(navHostController: NavHostController){
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .padding(start = 30.dp, top = 50.dp)) {
-                    IconButton(onClick = { navHostController.navigate("onboarding_screen") },
+                    IconButton(onClick = { navHostController.navigate("beranda_screen") },
                         modifier = Modifier
                             .width(50.dp)
                             .height(50.dp)) {

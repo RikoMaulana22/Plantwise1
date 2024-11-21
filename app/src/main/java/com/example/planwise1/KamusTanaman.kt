@@ -42,7 +42,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
 
     LazyColumn(modifier = Modifier
         .fillMaxSize()
-        .background(color = Color.DarkGray),
+        .background(color = Color(0XFFE9EFEC)),
         horizontalAlignment = Alignment.CenterHorizontally)
     {
         item {
@@ -207,7 +207,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
                 Row(verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .padding(start = 30.dp, top = 50.dp)) {
-                    IconButton(onClick = { },
+                    IconButton(onClick = { navHostController.navigate("beranda_screen") },
                         modifier = Modifier
                             .width(50.dp)
                             .height(50.dp)) {
