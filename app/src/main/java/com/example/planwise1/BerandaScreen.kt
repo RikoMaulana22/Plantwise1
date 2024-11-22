@@ -2,27 +2,15 @@ package com.example.planwise1
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,9 +22,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-
 @Composable
-fun Beranda(navHostController: NavHostController){
+fun Beranda(navHostController: NavHostController) {
     var plant by remember { mutableStateOf(TextFieldValue("")) }
     var selectedMenu by remember { mutableStateOf("home") }
     var isPressed by remember { mutableStateOf(false) }
@@ -59,205 +46,195 @@ fun Beranda(navHostController: NavHostController){
         R.drawable.btnpopuleroff
     )
 
-    /*Tombol navigasi*/
+    val popularPlants = listOf(
+        R.drawable.group1,
+        R.drawable.group2,
+        R.drawable.group3
+    )
+
     Box(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .fillMaxWidth()) {
-            Image(
-                painter = painterResource(id = R.drawable.navigasi),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(70.dp)
-            )
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround) {
-                menuItems.forEach { (menu, icons) ->
-                    IconButton(
-                        onClick = {
-                            selectedMenu = menu
-                            when (menu) {
-                                "home" -> { /* Tidak perlu aksi tambahan */ }
-                                "kamus" -> navHostController.navigate("kamus_screen")
-                                "kamera" -> { /* Tambahkan aksi kamera */ }
-                                "tanamanku" -> navHostController.navigate("myplant_screen")
-                                "komunitas" -> navHostController.navigate("komunitas_screen")
-                            }
-                        },
-                        modifier = Modifier.size(50.dp)
+        // Konten utama menggunakan LazyColumn
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(0XFFE9EFEC))
+                .padding(bottom = 50.dp) // Tambahkan padding untuk memberikan ruang bagi navigasi
+        ) {
+            item {
+                // Header
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 54.dp, start = 33.dp, end = 35.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(id = if (selectedMenu == menu) icons[1] else icons[0]),
-                            contentDescription = "$menu Icon"
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    /*Kontent Beranda*/
-    LazyColumn(modifier = Modifier
-        .fillMaxWidth()
-        .height(845.dp)
-        .background(color = Color(0XFFE9EFEC))) {
-        item {
-            Column {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 54.dp, start = 33.dp, end = 35.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = {navHostController.navigate("profil_screen")},
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.profile1),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Text(
-                        text = "Selamat Datang! Ghifari" /* nama diambil dari username sesuai saat login*/,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                    )
-                    IconButton(onClick = {},
-                        modifier = Modifier
-                            .width(50.dp)
-                            .height(50.dp)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.btnnotif),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                }
-
-                /* pencarrian */
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 40.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(width = 280.dp, height = 48.dp)
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
+                        IconButton(
+                            onClick = { navHostController.navigate("profil_screen") },
                             modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp)
+                                .width(50.dp)
+                                .height(50.dp)
                         ) {
-                            BasicTextField(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                value = plant,
-                                onValueChange = {newValue -> plant = newValue},
-                                textStyle = TextStyle(
-                                    color = Color.Black,
-                                    fontSize = 16.sp
-                                ),
-                                decorationBox = { innerTextField ->
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    ) {
-                                        if (plant.text.isEmpty()) {
-                                            Text(
-                                                text = "Search your Plants",
-                                                color = Color.Gray,
-                                                fontSize = 16.sp
-                                            )
-                                        }
-                                        innerTextField()
-                                    }
-                                }
+                            Image(
+                                painter = painterResource(id = R.drawable.profile1),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        Text(
+                            text = "Selamat Datang! Ghifari",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(top = 9.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(50.dp))
+
+                        IconButton(
+                            onClick = {},
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.btnnotif),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    IconButton(onClick = {/*TODO*/},
+                    // Pencarian
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .size(48.dp))
-                    {
-                        Image(
+                            .fillMaxWidth()
+                            .padding(top = 40.dp)
+                    ) {
+                        Box(
                             modifier = Modifier
-                                .size(48.dp),
-                            painter = painterResource(id = R.drawable.btnkategori),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
+                                .size(width = 280.dp, height = 48.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp)
+                            ) {
+                                BasicTextField(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    value = plant,
+                                    onValueChange = { newValue -> plant = newValue },
+                                    textStyle = TextStyle(
+                                        color = Color.Black,
+                                        fontSize = 16.sp
+                                    ),
+                                    decorationBox = { innerTextField ->
+                                        Box(modifier = Modifier.fillMaxWidth()) {
+                                            if (plant.text.isEmpty()) {
+                                                Text(
+                                                    text = "Search your Plants",
+                                                    color = Color.Gray,
+                                                    fontSize = 16.sp
+                                                )
+                                            }
+                                            innerTextField()
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        IconButton(
+                            onClick = { /* TODO */ },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Image(
+                                modifier = Modifier.size(48.dp),
+                                painter = painterResource(id = R.drawable.btnkategori),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
                     }
                 }
             }
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-            /* informasi suhu*/
-            Box(modifier = Modifier
-                    .padding(start = 16.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.infosuhu1),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(379.dp)
-                        .height(191.dp),
-                )
 
-                /*keterangan suhu*/
-                Column(modifier = Modifier
-                    .padding(start = 20.dp, top = 15.dp)) {
-                    Text(
-                        text = "Sabtu, 10 Oktober",
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Text(
-                        text = "Purwokerto",
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal,
-                    )
-                    Text(
-                        text = "30°C",
-                        fontSize = 65.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.ExtraBold,
+            // Konten Informasi Suhu
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp) // Memberikan jarak sama antara kanan dan kiri
+                ) {
+                    // Gambar Background
+                    Image(
+                        painter = painterResource(id = R.drawable.infosuhu1),
+                        contentDescription = null,
                         modifier = Modifier
-                            .padding(top = 20.dp)
+                            .fillMaxWidth() // Agar gambar memenuhi lebar dengan jarak yang ditentukan
+                            .aspectRatio(379f / 191f), // Menjaga proporsi gambar
                     )
-                    Text(
-                        text = "Cerah",
-                        fontSize = 20.sp,
-                        color = Color.White,
-                        fontWeight = FontWeight.Normal,
+
+                    // Konten Suhu
+                    Column(
                         modifier = Modifier
-                            .padding(top = 20.dp)
-                    )
+                            .padding(start = 20.dp, top = 20.dp) // Menambahkan padding untuk memberi jarak dari gambar
+                            .align(Alignment.TopStart) // Menempatkan di posisi kiri atas
+                    ) {
+                        // Tanggal dan Lokasi
+                        Text(
+                            text = "Sabtu, 10 Oktober",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = "Purwokerto",
+                            fontSize = 20.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                        )
+
+                        // Suhu
+                        Text(
+                            text = "30°C",
+                            fontSize = 40.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .padding(top = 20.dp)
+                        )
+
+                        // Status Cuaca
+                        Text(
+                            text = "Cerah",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                                .padding(top = 10.dp)
+                        )
+                    }
                 }
-                /*keterangan kecepatan angin*/
-                Box(modifier = Modifier
-                    .padding(start = 180.dp, top = 120.dp)){
+
+                // Box untuk Gambar dan Informasi Angin
+                Box(
+                    modifier = Modifier
+                        .padding(start = 185.dp, top = 1.dp)
+                        .offset(y = -70.dp) // Geser ke atas dengan offset negatif
+                ) {
+                    // Gambar Angin
                     Image(
                         painter = painterResource(id = R.drawable.infoangin),
                         contentDescription = null,
@@ -265,16 +242,23 @@ fun Beranda(navHostController: NavHostController){
                             .width(124.dp)
                             .height(68.dp)
                     )
-                    Row(modifier = Modifier
-                        .padding(start = 10.dp, top = 15.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
+
+                    // Row untuk Angin dan Kecepatan Angin
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 10.dp, top = 15.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Ikon Angin
                         Image(
                             painter = painterResource(id = R.drawable.angin),
                             contentDescription = null,
                             modifier = Modifier
                                 .width(35.dp)
                                 .height(36.dp)
+
                         )
+                        // Kecepatan Angin
                         Text(
                             text = "5 km/j",
                             fontSize = 25.sp,
@@ -285,28 +269,30 @@ fun Beranda(navHostController: NavHostController){
                         )
                     }
                 }
-                /*keterangan suhu ruangan*/
                 Box(modifier = Modifier
-                    .padding(start = 300.dp)) {
+                    .padding(start = 312.dp)
+                    .offset(y = -264.dp)) {
                     Image(
                         painter = painterResource(id = R.drawable.infoac),
                         contentDescription = null,
                         modifier = Modifier
                             .size(80.dp)
-                        )
+                    )
                     Column(horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
-                            .padding(start = 25.dp)) {
+                            .padding(start = 25.dp, top = 10.dp)
+                            .offset(y = -3.dp)) {
                         Image(
                             painter = painterResource(id = R.drawable.ac),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(30.dp)
+                                .size(27.dp)
+
                         )
                         Text(
                             text = "24",
-                            fontSize = 30.sp,
+                            fontSize = 25.sp,
                             color = Color.Cyan,
                             fontWeight = FontWeight.ExtraBold,
                         )
@@ -316,61 +302,106 @@ fun Beranda(navHostController: NavHostController){
                     painter = painterResource(id = R.drawable.infocuaca),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(start = 170.dp, top = 5.dp)
+                        .padding(start = 200.dp, )
+                        .offset(y = -330.dp)
                 )
                 Image(
                     painter = painterResource(id = R.drawable.infocahaya),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(start = 322.dp, top = 80.dp)
+                        .padding(start = 325.dp, top = 1.dp)
+                        .offset(y = -360.dp)
                 )
                 Text(
                     text = "20%",
-                    fontSize = 30.sp,
+                    fontSize = 26.sp,
                     color = Color(0XFFFFD600),
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier
-                        .padding(top = 140.dp, start = 322.dp)
+                        .padding(top = 1.dp, start = 321.dp)
+                        .offset(y = -340.dp)
                 )
             }
+
+            // Add the new content below the weather info
+            item {
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .offset(y = -340.dp)
+                ) {
+                    Row(modifier = Modifier
+                        .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,) {
+                        IconButton(onClick = { isPressed = !isPressed },
+                            modifier = Modifier
+                                .width(150.dp)
+                                .height(68.dp)) {
+                            Image(
+                                modifier = Modifier
+                                    .width(150.dp)
+                                    .height(68.dp),
+                                painter = painterResource(id = if (isPressed) artikel[1] else artikel[0]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        IconButton(onClick = { isPressedpo =!isPressedpo },
+                            modifier = Modifier
+                                .width(150.dp)
+                                .height(58.dp)) {
+                            Image(
+                                modifier = Modifier
+                                    .width(150.dp)
+                                    .height(58.dp),
+                                painter = painterResource(id = if (isPressedpo) populer[1] else populer[0]),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
+            }
+
+
+
         }
-        item {
-            Column(horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .padding(20.dp)) {
-                Row(modifier = Modifier
-                    .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,) {
-                    IconButton(onClick = { isPressed = !isPressed },
-                        modifier = Modifier
-                            .width(150.dp)
-                            .height(58.dp)) {
-                        Image(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .height(58.dp),
-                            painter = painterResource(id = if (isPressed) artikel[1] else artikel[0]),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    IconButton(onClick = { isPressedpo =!isPressedpo },
-                        modifier = Modifier
-                            .width(150.dp)
-                            .height(58.dp)) {
-                        Image(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .height(58.dp),
-                            painter = painterResource(id = if (isPressedpo) populer[1] else populer[0]),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+
+        // Bottom Navigation
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 1.dp, )
+                .offset(y = 37.dp)
+        ) {
+            NavigationBar (
+                containerColor = Color.White // Set the background color to white
+            ){
+                menuItems.forEach { (menu, icons) ->
+                    NavigationBarItem(
+                        icon = {
+                            Image(
+                                painter = painterResource(id = if (selectedMenu == menu) icons[1] else icons[0]),
+                                contentDescription = menu
+                            )
+                        },
+                        selected = selectedMenu == menu,
+                        onClick = {
+                            selectedMenu = menu
+                            when (menu) {
+                                "home" -> navHostController.navigate("beranda")
+                                "kamus" -> navHostController.navigate("kamus_screen")
+                                "kamera" -> navHostController.navigate("kamera_screen")
+                                "tanamanku" -> navHostController.navigate("tanamanku_screen")
+                                "komunitas" -> navHostController.navigate("komunitas_screen")
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
+
