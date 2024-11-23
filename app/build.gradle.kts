@@ -90,4 +90,8 @@ dependencies {
     //SQLITE
     implementation ("androidx.sqlite:sqlite:2.3.1")
 
+    //DATA STORE
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+
 }

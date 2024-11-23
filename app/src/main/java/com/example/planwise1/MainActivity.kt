@@ -12,15 +12,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planwise1.ui.theme.Planwise1Theme
+import com.example.planwise1.DataStoreManager
 
 class MainActivity : ComponentActivity() {
     private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var dataStoreManager: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         databaseHelper = DatabaseHelper(this)
+        dataStoreManager = DataStoreManager(this)
 
         setContent {
             Planwise1Theme {
@@ -40,6 +43,12 @@ class MainActivity : ComponentActivity() {
                         composable("list_screen") { ListKamusScreen(navController) }
                         composable("profil_screen") { Profile(navController) }
                         composable("myplant_screen") { MyPlantScreen(navController) }
+                        composable("detailplant_screen") { DetailMyPlant(navController) }
+                        composable("detailplant2_screen") {
+                            DetailMyPlant2(navController, dataStoreManager)
+                        }
+                        composable("detailplant3_screen") { DetailMyPlant3(navController) }
+                        composable("jadwal_screen") { JadwalScreen(navController) }
                     }
                 }
             }
