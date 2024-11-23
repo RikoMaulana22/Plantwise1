@@ -184,7 +184,7 @@ fun MyPlantScreen(navHostController: NavHostController){
                     MenuItem(
                         imageRes = imageRes,
                         description = description,
-                        onClick = { /* TODO: Handle click */ }
+                        onClick = { navHostController.navigate("detailplant_screen")}
                     )
                 }
             }
