@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -60,6 +61,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.ktx)
     implementation(libs.play.services.analytics.impl)
+    implementation(libs.androidx.camera.lifecycle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,6 +94,11 @@ dependencies {
 
     //DATA STORE
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+    //KAMERA X
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+
 
 
 }
