@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.planwise1.data.SharedPrePreferencesManager
 
 @Composable
 fun Beranda(navHostController: NavHostController){
@@ -41,6 +43,10 @@ fun Beranda(navHostController: NavHostController){
     var selectedMenu by remember { mutableStateOf("home") }
     var isPressed by remember { mutableStateOf(false) }
     var isPressedpo by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val sharedPreferencesManager = SharedPrePreferencesManager(context)
+    // Ambil data pengguna
+    val username = sharedPreferencesManager.name ?: "Pengguna"
 
     val menuItems = listOf(
         "home" to listOf(R.drawable.btnhomeoff, R.drawable.btnhome),
@@ -84,7 +90,7 @@ fun Beranda(navHostController: NavHostController){
                             when (menu) {
                                 "home" -> { /* Tidak perlu aksi tambahan */ }
                                 "kamus" -> navHostController.navigate("kamus_screen")
-                                "kamera" -> { /* Tambahkan aksi kamera */ }
+                                "kamera" -> navHostController.navigate("camera_screen")
                                 "tanamanku" -> navHostController.navigate("myplant_screen")
                                 "komunitas" -> navHostController.navigate("komunitas_screen")
                             }
@@ -124,7 +130,7 @@ fun Beranda(navHostController: NavHostController){
                         )
                     }
                     Text(
-                        text = "Selamat Datang! Ghifari" /* nama diambil dari username sesuai saat login*/,
+                        text = "Selamat Datang! $username" /* nama diambil dari username sesuai saat login*/,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.Black,

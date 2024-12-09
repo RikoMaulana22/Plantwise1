@@ -64,8 +64,8 @@ fun Profile(navHostController: NavHostController){
     val wall = sharedPreferencesManager.wall ?: "wall"
     val profile = sharedPreferencesManager.profil ?: "profil" // Gambar Profil
 
-    var wallImageUri by remember { mutableStateOf("") }
-    var profileImageUri by remember { mutableStateOf("") }
+    var wallImageUri by remember { mutableStateOf(wall) } // Mengambil gambar wall yang tersimpan
+    var profileImageUri by remember { mutableStateOf(profile) }
 
     var currentSelecting by remember { mutableStateOf("wall") }
     val userId: Int? = sharedPreferencesManager.getUserId() // Mengambil userId dari SharedPreferences
@@ -75,42 +75,34 @@ fun Profile(navHostController: NavHostController){
     ) { uri: Uri? ->
         uri?.let {
             if (currentSelecting == "wall") {
-                // Mengupdate wallImageUri dengan URI yang dipilih
                 wallImageUri = it.toString()
-                // Menyimpan URI gambar wall ke SharedPreferences
-                sharedPreferencesManager.wall = wallImageUri
-                // Menyimpan URI gambar wall ke database
+                sharedPreferencesManager.wall = wallImageUri // Simpan gambar wall ke SharedPreferences
                 userId?.let { id ->
-                    dbHelper.updateUserWallImage(id, wallImageUri) // Menggunakan userId yang valid
-                } ?: run {
-                    Log.e("Profile", "userId is null, unable to update wall image")
+                    dbHelper.updateUserWallImage(id, wallImageUri) // Update gambar wall di database
                 }
             } else {
-                // Mengupdate profileImageUri dengan URI yang dipilih
                 profileImageUri = it.toString()
-                // Menyimpan URI gambar profil ke SharedPreferences
-                sharedPreferencesManager.profil = profileImageUri
-                // Menyimpan URI gambar profil ke database
+                sharedPreferencesManager.profil = profileImageUri // Simpan gambar profil ke SharedPreferences
                 userId?.let { id ->
-                    dbHelper.updateUserProfileImage(id, profileImageUri) // Menggunakan userId yang valid
-                } ?: run {
-                    Log.e("Profile", "userId is null, unable to update profile image")
+                    dbHelper.updateUserProfileImage(id, profileImageUri) // Update gambar profil di database
                 }
             }
         } ?: run {
-            // Menangani jika user tidak memilih gambar atau terjadi kesalahan
-            Log.e("Profile", "Failed to select image")
+            Log.e("Profile", "Gagal memilih gambar")
         }
     }
 
     // State for showing the logout confirmation dialog
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Handle the logout action
     fun logout() {
-        // Perform logout actions here (e.g., clearing user data, navigating to the login screen)
-        navHostController.navigate("logins_screen") // Change to your login screen route
+        // Menghapus data yang disimpan di SharedPreferences
+        sharedPreferencesManager.clear() // Pastikan Anda menambahkan fungsi clear di SharedPreferencesManager
+
+        // Navigasi ke layar login setelah logout
+        navHostController.navigate("logins_screen") // Ubah ke rute layar login Anda
     }
+
 
 
     LazyColumn(modifier = Modifier
@@ -126,7 +118,7 @@ fun Profile(navHostController: NavHostController){
             {
 
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    // Wall Image
+                    // Gambar Wall
                     Image(
                         modifier = Modifier
                             .width(412.dp)
@@ -135,12 +127,12 @@ fun Profile(navHostController: NavHostController){
                                 currentSelecting = "wall"
                                 galleryLauncher.launch("image/*")
                             },
-                        painter = rememberAsyncImagePainter(wall),
+                        painter = rememberAsyncImagePainter(wallImageUri),
                         contentDescription = null,
                         contentScale = ContentScale.Crop
                     )
 
-                    // Profile Image
+                    // Gambar Profil
                     IconButton(
                         onClick = {
                             currentSelecting = "profile"
@@ -154,7 +146,7 @@ fun Profile(navHostController: NavHostController){
                     ) {
                         Image(
                             modifier = Modifier.size(150.dp),
-                            painter = rememberAsyncImagePainter(profile),
+                            painter = rememberAsyncImagePainter(profileImageUri),
                             contentDescription = null,
                             contentScale = ContentScale.Crop
                         )

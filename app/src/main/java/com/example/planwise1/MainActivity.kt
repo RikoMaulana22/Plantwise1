@@ -1,5 +1,6 @@
 package com.example.planwise1
 
+import CameraScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,8 @@ class MainActivity : ComponentActivity() {
 
         databaseHelper = DatabaseHelper(this)
         dataStoreManager = DataStoreManager(this)
+        val dbHelper = DatabaseHelper(this)
+        val db = dbHelper.readableDatabase
 
         setContent {
             Planwise1Theme {
@@ -43,12 +46,15 @@ class MainActivity : ComponentActivity() {
                         composable("list_screen") { ListKamusScreen(navController) }
                         composable("profil_screen") { Profile(navController) }
                         composable("myplant_screen") { MyPlantScreen(navController) }
-                        composable("detailplant_screen") { DetailMyPlant(navController) }
+                        composable("detailplant_screen") {
+                            DetailMyPlant(navController, dataStoreManager)
+                        }
                         composable("detailplant2_screen") {
                             DetailMyPlant2(navController, dataStoreManager)
                         }
                         composable("detailplant3_screen") { DetailMyPlant3(navController) }
                         composable("jadwal_screen") { JadwalScreen(navController) }
+                        composable("camera_screen") { CameraScreen(navController) }
                     }
                 }
             }

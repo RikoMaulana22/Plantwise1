@@ -16,15 +16,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
@@ -39,9 +45,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
 
 @Composable
-fun DetailMyPlant(navHostController: NavHostController){
+fun DetailMyPlant(navHostController: NavHostController, dataStoreManager: DataStoreManager){
     val customShape = RoundedCornerShape(
         topStart = 30.dp,
         topEnd = 30.dp,
@@ -64,7 +71,16 @@ fun DetailMyPlant(navHostController: NavHostController){
         Color(0xFFCFF4D2),
         Color(0xFF56C596)
     )
+    val saveTextFields = dataStoreManager.textFieldsFlow.collectAsState(initial = listOf("", "", "", ""))
+    val textFieldValue = remember { mutableStateOf(saveTextFields.value[0]) }
+    val textFieldValue2 = remember { mutableStateOf(saveTextFields.value[1]) }
+    val textFieldValue3 = remember { mutableStateOf(saveTextFields.value[2]) }
+    val textFieldValue4 = remember { mutableStateOf(saveTextFields.value[3]) }
+    val expanded2 = remember { mutableStateOf(false) }
     val expanded = remember { mutableStateOf(false) }
+
+    val scope = rememberCoroutineScope()
+
 
     //konten
     LazyColumn(modifier = Modifier
@@ -156,6 +172,154 @@ fun DetailMyPlant(navHostController: NavHostController){
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceEvenly) {
 
+                            Column(verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally) {
+                                DropdownMenu(
+                                    expanded = expanded2.value,
+                                    onDismissRequest = { expanded2.value = false },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color.White)
+                                        .clip(RoundedCornerShape(10.dp))
+
+                                ) {
+                                    // Konten DropdownMenu
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(308.dp)
+                                            .padding(20.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.Center
+                                    ) {
+                                        // TextField di dalam DropdownMenu
+                                        Row(modifier = Modifier
+                                            .fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.icbunga),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                            TextField(
+                                                value = textFieldValue.value,
+                                                onValueChange = { newValue ->
+                                                    textFieldValue.value = newValue
+                                                },
+                                                placeholder = { Text("Type something...") },
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(Color.White)
+                                            )
+                                        }
+                                        Row(modifier = Modifier
+                                            .fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.icair2),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                            TextField(
+                                                value = textFieldValue2.value,
+                                                onValueChange = { newValue ->
+                                                    textFieldValue2.value = newValue
+                                                },
+                                                placeholder = { Text("Type something...") },
+                                                modifier = Modifier
+                                                    .width(250.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(Color.White)
+                                            )
+                                            Text(
+                                                text = "ml",
+                                                fontSize = 25.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Black
+                                            )
+                                        }
+                                        Row(modifier = Modifier
+                                            .fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.icpupuk2),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                            TextField(
+                                                value = textFieldValue3.value,
+                                                onValueChange = { newValue ->
+                                                    textFieldValue3.value = newValue
+                                                },
+                                                placeholder = { Text("Type something...") },
+                                                modifier = Modifier
+                                                    .width(250.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(Color.White)
+                                            )
+                                            Text(
+                                                text = "gm",
+                                                fontSize = 25.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Black
+                                            )
+                                        }
+                                        Row(modifier = Modifier
+                                            .fillMaxWidth(),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Image(
+                                                painter = painterResource(id = R.drawable.icmatahari2),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                            )
+                                            TextField(
+                                                value = textFieldValue4.value,
+                                                onValueChange = { newValue ->
+                                                    textFieldValue4.value = newValue
+                                                },
+                                                placeholder = { Text("Type something...") },
+                                                modifier = Modifier
+                                                    .width(250.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(Color.White)
+                                            )
+                                            Text(
+                                                text = "%",
+                                                fontSize = 40.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.Black
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(10.dp))
+
+                                        // Tombol untuk menyimpan data
+                                        Button(
+                                            onClick = {
+                                                expanded2.value = false
+                                                scope.launch {
+                                                    dataStoreManager.saveTextFields(
+                                                        textFieldValue.value,
+                                                        textFieldValue2.value,
+                                                        textFieldValue3.value,
+                                                        textFieldValue4.value
+                                                    )
+                                                }
+                                            },
+                                            modifier = Modifier
+                                                .width(275.dp)
+                                                .height(35.dp)
+                                        ) {
+                                            Text("Edit")
+                                        }
+                                    }
+                                }
+                            }
+
                             Box(contentAlignment = Alignment.Center,
                                 ) {
                                 Image(
@@ -165,7 +329,7 @@ fun DetailMyPlant(navHostController: NavHostController){
                                     modifier = Modifier
                                         .width(173.dp)
                                         .height(86.dp)
-                                        .clickable {  }
+                                        .clickable { expanded2.value = !expanded2.value }
                                 )
                                 Row(verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Center) {

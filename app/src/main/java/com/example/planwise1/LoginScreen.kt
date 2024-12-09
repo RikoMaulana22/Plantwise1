@@ -171,7 +171,8 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
                             user?.let {
                                 // Setelah login berhasil, simpan userId di SharedPreferences
                                 sharedPreferencesManager.setUserId(it.id)
-
+                                sharedPreferencesManager.name = username
+                                sharedPreferencesManager.password = password
                                 navHostController.navigate("beranda_screen")
                             }
                         } else {
