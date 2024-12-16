@@ -61,11 +61,13 @@ fun Profile(navHostController: NavHostController){
     // Ambil data pengguna
     val username = sharedPreferencesManager.name ?: "Pengguna"
     val email = sharedPreferencesManager.email ?: "email"
-    val wall = sharedPreferencesManager.wall ?: "wall"
-    val profile = sharedPreferencesManager.profil ?: "profil" // Gambar Profil
+    val wall = sharedPreferencesManager.wall ?: "default_wall_uri" // Ganti default_wall_uri dengan gambar default
+    val profile = sharedPreferencesManager.profil ?: "default_profile_uri"
 
-    var wallImageUri by remember { mutableStateOf(wall) } // Mengambil gambar wall yang tersimpan
-    var profileImageUri by remember { mutableStateOf(profile) }
+
+    var wallImageUri by remember { mutableStateOf(sharedPreferencesManager.wall ?: "default_wall_uri") }
+    var profileImageUri by remember { mutableStateOf(sharedPreferencesManager.profil ?: "default_profile_uri") }
+
 
     var currentSelecting by remember { mutableStateOf("wall") }
     val userId: Int? = sharedPreferencesManager.getUserId() // Mengambil userId dari SharedPreferences
@@ -375,7 +377,7 @@ fun Profile(navHostController: NavHostController){
     if (showLogoutDialog) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Apakah Anda Yakin Ingin Logout?") },
+            title = { Text("Apakah Anda Yakin Ingin Keluar?") },
             confirmButton = {
                 TextButton(onClick = {
                     showLogoutDialog = false

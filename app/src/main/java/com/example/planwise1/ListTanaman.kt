@@ -14,12 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,10 +38,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.planwise1.viewmodel.PlantsViewModel
 
 @Composable
-fun ListKamusScreen(navHostController: NavHostController){
+fun ListKamusScreen(navHostController: NavHostController, viewModel: PlantsViewModel){
     var plant by remember { mutableStateOf(TextFieldValue("")) }
+    val speciesList by viewModel.speciesList.observeAsState(emptyList())
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getSpeciesList()
+    }
     val nameplant = listOf(
         "Kaktus badag\n(catevalus)",
         "Kaktus badag\n(catevalus)",
@@ -131,33 +141,16 @@ fun ListKamusScreen(navHostController: NavHostController){
                 }
             }
         }
-        item {
-            Column(modifier = Modifier
-                .padding(top = 20.dp, start = 20.dp)
-                .fillMaxWidth(),
-                horizontalAlignment = Alignment.Start) {
+        items(speciesList.take(40)) { item ->
+            key(item.id) {
                 Text(
-                    text = "Kaktus",
-                    fontSize = 20.sp,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold
+                    text = item.commonName ?: "No Data",
+                    color = Color.Black, // Warna teks hitam
+                    fontSize = 16.sp, // Ukuran font opsional
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 8.dp) // Spasi dari tepi
+                        .fillMaxWidth() // Pastikan elemen teks memenuhi lebar
                 )
-                Column(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)) {
-                    Text(
-                        text = "Kaktus badag",
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Text(
-                        text = "(cactusvaleo)",
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Light,
-                    )
-                }
             }
         }
     }

@@ -135,7 +135,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
                     contentDescription = null
                 )
             }
-            IconButton(onClick = {/*TODO*/},
+            IconButton(onClick = {navHostController.navigate("list_screen")},
                 modifier = Modifier
                     .width(370.dp)
                     .height(230.dp))
@@ -148,7 +148,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
                     contentDescription = null
                 )
             }
-            IconButton(onClick = {/*TODO*/},
+            IconButton(onClick = {navHostController.navigate("list_screen")},
                 modifier = Modifier
                     .width(370.dp)
                     .height(230.dp))
@@ -161,7 +161,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
                     contentDescription = null
                 )
             }
-            IconButton(onClick = {/*TODO*/},
+            IconButton(onClick = {navHostController.navigate("list_screen")},
                 modifier = Modifier
                     .width(370.dp)
                     .height(230.dp))
@@ -174,7 +174,7 @@ fun KamusTanamanScreen(navHostController: NavHostController){
                     contentDescription = null
                 )
             }
-            IconButton(onClick = {/*TODO*/},
+            IconButton(onClick = {navHostController.navigate("list_screen")},
                 modifier = Modifier
                     .width(370.dp)
                     .height(230.dp))

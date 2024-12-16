@@ -118,4 +118,43 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         Log.d("Database", "Rows updated: $rowsUpdated")
     }
 
+    fun getUserProfileImage(userId: Int): String? {
+        val cursor = readableDatabase.query(
+            TABLE_USERS,
+            arrayOf(COLUMN_IMAGE_PROFILE),
+            "$COLUMN_ID = ?",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            null
+        )
+        var profileImageUri: String? = null
+        with(cursor) {
+            if (moveToFirst()) {
+                profileImageUri = getString(getColumnIndexOrThrow(COLUMN_IMAGE_PROFILE))
+            }
+        }
+        cursor.close()
+        return profileImageUri
+    }
+
+    fun getUserWallImage(userId: Int): String? {
+        val cursor = readableDatabase.query(
+            TABLE_USERS,
+            arrayOf(COLUMN_IMAGE_WALL),
+            "$COLUMN_ID = ?",
+            arrayOf(userId.toString()),
+            null,
+            null,
+            null
+        )
+        var wallImageUri: String? = null
+        with(cursor) {
+            if (moveToFirst()) {
+                wallImageUri = getString(getColumnIndexOrThrow(COLUMN_IMAGE_WALL))
+            }
+        }
+        cursor.close()
+        return wallImageUri
+    }
 }

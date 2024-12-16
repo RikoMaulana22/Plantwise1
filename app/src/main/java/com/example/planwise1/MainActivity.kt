@@ -8,12 +8,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planwise1.ui.theme.Planwise1Theme
 import com.example.planwise1.DataStoreManager
+import com.example.planwise1.viewmodel.PlantsViewModel
+import com.example.planwise1.viewmodel.PlantsViewModelFactory
 
 class MainActivity : ComponentActivity() {
     private lateinit var databaseHelper: DatabaseHelper
@@ -32,6 +36,7 @@ class MainActivity : ComponentActivity() {
             Planwise1Theme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
+                    val context = LocalContext.current
 
                     NavHost(
                         navController = navController,
@@ -43,7 +48,12 @@ class MainActivity : ComponentActivity() {
                         composable("beranda_screen") { Beranda(navController) }
                         composable("komunitas_screen") { KomunitasScreen(navController) }
                         composable("kamus_screen") { KamusTanamanScreen(navController) }
-                        composable("list_screen") { ListKamusScreen(navController) }
+                        composable(
+                            "list_screen"
+                        ) {
+                            val viewModel: PlantsViewModel = viewModel(factory = PlantsViewModelFactory(context = context))
+                            ListKamusScreen(navController, viewModel = viewModel)
+                        }
                         composable("profil_screen") { Profile(navController) }
                         composable("myplant_screen") { MyPlantScreen(navController) }
                         composable("detailplant_screen") {

@@ -33,19 +33,18 @@ class SharedPrePreferencesManager(context: Context) {
             editor.commit()
         }
 
-    var profil
-        get() = preferences.getString(PROFILE, "")
+    var wall: String?
+        get() = preferences.getString("wall", null)
         set(value) {
-            editor.putString(PROFILE, value).apply()// Sebelumnya PASSWORD_KEY
-            editor.commit()
+            preferences.edit().putString("wall", value).apply()
         }
 
-    var wall
-        get() = preferences.getString(WALL, "")
+    var profil: String?
+        get() = preferences.getString("profil", null)
         set(value) {
-            editor.putString(WALL, value).apply() // Sebelumnya PASSWORD_KEY
-            editor.commit()
+            preferences.edit().putString("profil", value).apply()
         }
+
 
     // Menyimpan userId ke SharedPreferences
     fun setUserId(userId: Int) {

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Planwise1</string>
+    <string name="app_name">Planwise</string>
+    <string name="api_key">sk-O35I6735b948b770f7631</string>
 </resources>
