@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.planwise1.data.SharedPrePreferencesManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,6 +50,10 @@ fun KomunitasScreen(navHostController: NavHostController){
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var isPressed by remember { mutableStateOf(false) }
     val messages = remember { mutableStateListOf<String>() }
+    val context = LocalContext.current
+    val sharedPreferencesManager = SharedPrePreferencesManager(context)
+    // Ambil data pengguna
+    val username = sharedPreferencesManager.name ?: "Pengguna"
 
     val mic = listOf(
         R.drawable.micoff,
@@ -80,7 +86,7 @@ fun KomunitasScreen(navHostController: NavHostController){
                         horizontalArrangement = Arrangement.End
                     ) {
                         Text(
-                            text = "Syahri Ghifari M",
+                            text = "$username",
                             fontSize = 16.sp,
                             color = Color.Black,
                             modifier = Modifier

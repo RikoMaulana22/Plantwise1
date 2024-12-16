@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -19,10 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.planwise1.data.SharedPrePreferencesManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHelper) {
+    val context = LocalContext.current
+    val sharedPreferencesManager = SharedPrePreferencesManager(context)
+
     // State variables for username, password, and error handling
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -30,6 +35,7 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
     var passwordVisibility by remember { mutableStateOf(false) }
     var loginError by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+    var btnState by remember { mutableStateOf(0) }
 
     // Button states
     val btnmasuk = listOf(
@@ -45,10 +51,12 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
     ) {
         // Back button to navigate to onboarding
         IconButton(
-            onClick = { navHostController.popBackStack() },
+            onClick = { navHostController.navigate("onboarding_screen") },
             modifier = Modifier
                 .align(Alignment.Start)
                 .padding(start = 30.dp, top = 50.dp)
+                .width(50.dp)
+                .height(50.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.btnback),
@@ -119,7 +127,7 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp)
+                .padding(horizontal = 30.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -129,7 +137,7 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
             Text(
                 text = loginError,
                 color = Color.Red,
-                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
+                modifier = Modifier.padding(horizontal = 30.dp)
             )
         }
 
@@ -143,38 +151,48 @@ fun LoginScreen(navHostController: NavHostController, databaseHelper: DatabaseHe
                     .align(Alignment.CenterHorizontally),
                 color = Color(0xFF16423C)
             )
-        }
-
-        // Login button
-        IconButton(
-            onClick = {
-                if (username.isEmpty() || password.isEmpty()) {
-                    loginError = "Username dan Password tidak boleh kosong"
-                } else {
-                    isLoading = true
-                    loginError = ""
-                    // Simulating login process
-                    val isLoginSuccessful = databaseHelper.checkUser(username, password)
-                    isLoading = false
-                    if (isLoginSuccessful) {
-                        // Arahkan ke halaman Komunitas setelah login berhasil
-                        navHostController.navigate("beranda_screen")
+        } else {
+            IconButton(
+                onClick = {
+                    if (username.isEmpty() || password.isEmpty()) {
+                        loginError = "Username dan Password tidak boleh kosong"
                     } else {
-                        loginError = "Username atau Password salah"
+                        isLoading = true
+                        loginError = ""
+                        btnState = 1
+
+                        // Panggil fungsi checkUserCredentials
+                        val loginSuccess = databaseHelper.checkuserregist(username, password)
+                        isLoading = false
+                        btnState = 0
+                        if (loginSuccess) {
+                            // Ambil userId dari database setelah login berhasil
+                            val user = databaseHelper.checkUsers().find { it.username == username }
+                            user?.let {
+                                // Setelah login berhasil, simpan userId di SharedPreferences
+                                sharedPreferencesManager.setUserId(it.id)
+                                sharedPreferencesManager.name = username
+                                sharedPreferencesManager.password = password
+                                navHostController.navigate("beranda_screen")
+                            }
+                        } else {
+                            loginError = "Username atau Password salah"
+                        }
                     }
-                }
-            },
-            modifier = Modifier
-                .width(370.dp)
-                .height(70.dp)
-        ) {
-            Image(
-                painter = painterResource(id = btnmasuk[0]),
-                contentDescription = "Login Button",
+                },
                 modifier = Modifier
-                    .width(344.dp)
-                    .height(56.dp)
-            )
+                    .width(370.dp)
+                    .height(70.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = btnmasuk[btnState]),
+                    contentDescription = "Login Button",
+                    modifier = Modifier
+                        .width(344.dp)
+                        .height(56.dp)
+                )
+            }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))

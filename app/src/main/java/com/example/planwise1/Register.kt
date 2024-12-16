@@ -31,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.planwise1.data.SharedPrePreferencesManager
+import com.example.planwise1.domain.Users
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,13 +45,14 @@ fun RegistrationScreen(navHostController: NavHostController) {
     var passwordVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val dbHelper = remember { DatabaseHelper(context) }
+    val Users = dbHelper.checkUsers()
+
 
     val btndaftar = listOf(
         R.drawable.btndaftar,
         R.drawable.btndaftar2
     )
 
-    // State variables for error messages
     var usernameError by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf("") }
     var passwordError by remember { mutableStateOf("") }
@@ -57,14 +60,11 @@ fun RegistrationScreen(navHostController: NavHostController) {
 
     var isClicked by remember { mutableStateOf(false) }
 
-    // Regex pattern for validating email
     val emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
 
-    // Function to validate fields
     fun validateFields(): Boolean {
         var isValid = true
 
-        // Clear previous errors
         usernameError = ""
         emailError = ""
         passwordError = ""
@@ -81,15 +81,24 @@ fun RegistrationScreen(navHostController: NavHostController) {
         } else if (!email.matches(emailPattern.toRegex())) {
             emailError = "Format email tidak valid"
             isValid = false
+        } else if (dbHelper.checkUsers().any { it.email == email }) {
+            emailError = "Email sudah digunakan"
+            isValid = false
         }
 
         if (password.isEmpty()) {
             passwordError = "Password harus diisi"
             isValid = false
+        } else if (password.length < 6) {
+            passwordError = "Password harus lebih dari 6 karakter"
+            isValid = false
         }
 
         if (confirmPassword.isEmpty()) {
             confirmPasswordError = "Konfirmasi password harus diisi"
+            isValid = false
+        } else if (confirmPassword != password) {
+            confirmPasswordError = "Password tidak cocok"
             isValid = false
         }
 
@@ -132,7 +141,6 @@ fun RegistrationScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Username input field
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -150,7 +158,6 @@ fun RegistrationScreen(navHostController: NavHostController) {
             isError = usernameError.isNotEmpty()
         )
 
-        // Error message for username
         if (usernameError.isNotEmpty()) {
             Text(
                 text = usernameError,
@@ -161,7 +168,7 @@ fun RegistrationScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Email input field
+        // Email
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -179,7 +186,6 @@ fun RegistrationScreen(navHostController: NavHostController) {
             isError = emailError.isNotEmpty()
         )
 
-        // Error message for email
         if (emailError.isNotEmpty()) {
             Text(
                 text = emailError,
@@ -190,7 +196,7 @@ fun RegistrationScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Password input field
+        // Password
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -218,24 +224,15 @@ fun RegistrationScreen(navHostController: NavHostController) {
                     )
                 }
             },
+            isError = passwordError.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp),
-            isError = passwordError.isNotEmpty()
+                .padding(horizontal = 30.dp)
         )
-
-        // Error message for password
-        if (passwordError.isNotEmpty()) {
-            Text(
-                text = passwordError,
-                color = Color.Red,
-                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
-            )
-        }
+        if (passwordError.isNotEmpty()) Text(passwordError, color = Color.Red, modifier = Modifier.padding(start = 30.dp))
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Confirm Password input field
         OutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -263,37 +260,34 @@ fun RegistrationScreen(navHostController: NavHostController) {
                     )
                 }
             },
+            isError = confirmPasswordError.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp),
-            isError = confirmPasswordError.isNotEmpty()
+                .padding(horizontal = 30.dp)
         )
-
-        // Error message for confirm password
-        if (confirmPasswordError.isNotEmpty()) {
-            Text(
-                text = confirmPasswordError,
-                color = Color.Red,
-                modifier = Modifier.padding(start = 30.dp, end = 30.dp)
-            )
-        }
+        if (confirmPasswordError.isNotEmpty()) Text(confirmPasswordError, color = Color.Red, modifier = Modifier.padding(start = 30.dp))
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Register button
         IconButton(
             onClick = {
                 if (validateFields()) {
-                    if (password == confirmPassword) {
-                        val isRegistered = dbHelper.registerUser(username, email, password)
-                        if (isRegistered) {
-                            navHostController.navigate("logins_screen")
-                        } else {
-                            Toast.makeText(context, "Gagal mendaftar. Coba lagi.", Toast.LENGTH_SHORT).show()
-                        }
+                    val newUserId = dbHelper.registerUser(username, email, password)
+                    if (newUserId != -1L) {
+                        // Simpan data pengguna ke SharedPreferences
+                        val sharedPreferencesManager = SharedPrePreferencesManager(context)
+                        sharedPreferencesManager.name = username
+                        sharedPreferencesManager.password = password
+                        sharedPreferencesManager.email = email // Misalnya profil diisi dengan email
+                        sharedPreferencesManager.profil = "default_profil"
+                        sharedPreferencesManager.wall = "default_wallpaper" // Bisa diubah sesuai kebutuhan
+
+                        Toast.makeText(context, "Pendaftaran Berhasil!", Toast.LENGTH_SHORT).show()
+                        navHostController.navigate("logins_screen")
                     } else {
-                        Toast.makeText(context, "Password tidak cocok!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Pendaftaran Gagal", Toast.LENGTH_SHORT).show()
                     }
+
                 }
             },
             modifier = Modifier
@@ -301,19 +295,19 @@ fun RegistrationScreen(navHostController: NavHostController) {
                 .height(70.dp)
         ) {
             Image(
-                painter = painterResource(id = if (isClicked) btndaftar[1] else btndaftar[0]),
-                contentDescription = "cari btn",
+                painter = painterResource(id = R.drawable.btndaftar),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(344.dp)
                     .height(56.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         TextButton(onClick = { navHostController.navigate("logins_screen") }) {
             Text("Sudah Punya Akun? Masuk", color = Color.Gray)
         }
     }
 }
-

@@ -1,8 +1,12 @@
 package com.example.planwise1
 
+import android.net.Uri
 import android.provider.ContactsContract.Profile
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +23,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,9 +36,77 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import android.provider.MediaStore
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.*
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.example.planwise1.data.SharedPrePreferencesManager
 
 @Composable
 fun Profile(navHostController: NavHostController){
+    val dbHelper = DatabaseHelper(LocalContext.current)
+    val context = LocalContext.current
+    val sharedPreferencesManager = SharedPrePreferencesManager(context)
+    // Ambil data pengguna
+    val username = sharedPreferencesManager.name ?: "Pengguna"
+    val email = sharedPreferencesManager.email ?: "email"
+    val wall = sharedPreferencesManager.wall ?: "default_wall_uri" // Ganti default_wall_uri dengan gambar default
+    val profile = sharedPreferencesManager.profil ?: "default_profile_uri"
+
+
+    var wallImageUri by remember { mutableStateOf(sharedPreferencesManager.wall ?: "default_wall_uri") }
+    var profileImageUri by remember { mutableStateOf(sharedPreferencesManager.profil ?: "default_profile_uri") }
+
+
+    var currentSelecting by remember { mutableStateOf("wall") }
+    val userId: Int? = sharedPreferencesManager.getUserId() // Mengambil userId dari SharedPreferences
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            if (currentSelecting == "wall") {
+                wallImageUri = it.toString()
+                sharedPreferencesManager.wall = wallImageUri // Simpan gambar wall ke SharedPreferences
+                userId?.let { id ->
+                    dbHelper.updateUserWallImage(id, wallImageUri) // Update gambar wall di database
+                }
+            } else {
+                profileImageUri = it.toString()
+                sharedPreferencesManager.profil = profileImageUri // Simpan gambar profil ke SharedPreferences
+                userId?.let { id ->
+                    dbHelper.updateUserProfileImage(id, profileImageUri) // Update gambar profil di database
+                }
+            }
+        } ?: run {
+            Log.e("Profile", "Gagal memilih gambar")
+        }
+    }
+
+    // State for showing the logout confirmation dialog
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    fun logout() {
+        // Menghapus data yang disimpan di SharedPreferences
+        sharedPreferencesManager.clear() // Pastikan Anda menambahkan fungsi clear di SharedPreferencesManager
+
+        // Navigasi ke layar login setelah logout
+        navHostController.navigate("logins_screen") // Ubah ke rute layar login Anda
+    }
+
+
+
     LazyColumn(modifier = Modifier
         .background(color = Color.White)
         .fillMaxSize(),
@@ -43,29 +119,39 @@ fun Profile(navHostController: NavHostController){
                 horizontalAlignment = Alignment.CenterHorizontally)
             {
 
-                Box(modifier = Modifier
-                    .fillMaxWidth())
-                {
-
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    // Gambar Wall
                     Image(
                         modifier = Modifier
                             .width(412.dp)
-                            .height(342.dp),
-                        painter = painterResource(
-                            id = R.drawable.wall1),
-                        contentDescription = null)
+                            .height(342.dp)
+                            .clickable {
+                                currentSelecting = "wall"
+                                galleryLauncher.launch("image/*")
+                            },
+                        painter = rememberAsyncImagePainter(wallImageUri),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
 
-                    IconButton(onClick = { /*TODO()*/},
+                    // Gambar Profil
+                    IconButton(
+                        onClick = {
+                            currentSelecting = "profile"
+                            galleryLauncher.launch("image/*")
+                        },
                         modifier = Modifier
                             .width(125.dp)
                             .height(125.dp)
                             .align(Alignment.BottomCenter)
-                            .offset(y = 53.dp),)
-                    {
-                        Image(modifier = Modifier.size(150.dp),
-                            painter = painterResource(
-                                id = R.drawable.profile1),
-                            contentDescription = null)
+                            .offset(y = 53.dp)
+                    ) {
+                        Image(
+                            modifier = Modifier.size(150.dp),
+                            painter = rememberAsyncImagePainter(profileImageUri),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
                     }
 
                     Row(
@@ -96,14 +182,14 @@ fun Profile(navHostController: NavHostController){
                 }
 
                 Text(
-                    text = "Syahri Ghifari M",
+                    text = "$username",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.padding(top = 70.dp)
                 )
                 Text(
-                    text = "syahrighifari012@gmail.com",
+                    text = "$email",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.Black,
@@ -157,7 +243,7 @@ fun Profile(navHostController: NavHostController){
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.padding(start = 40.dp, top = 10.dp),
-                )
+            )
             {
 
                 IconButton(onClick = { /*TODO()*/},
@@ -271,7 +357,7 @@ fun Profile(navHostController: NavHostController){
                 horizontalAlignment = Alignment.CenterHorizontally)
             {
                 IconButton(
-                    onClick = { /*TODO()*/ },
+                    onClick = { showLogoutDialog = true },
                     modifier = Modifier
                         .width(327.dp)
                         .height(57.dp)
@@ -286,5 +372,25 @@ fun Profile(navHostController: NavHostController){
                 }
             }
         }
+    }
+    // Logout Confirmation Dialog
+    if (showLogoutDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Apakah Anda Yakin Ingin Keluar?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLogoutDialog = false
+                    logout()
+                }) {
+                    Text("Ya")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Tidak")
+                }
+            }
+        )
     }
 }
